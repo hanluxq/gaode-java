@@ -76,7 +76,7 @@
     </div>
 </template>
 <script>
-import config from '../../config.json';
+import config from '../../api-key.json';
 //必须要使用密钥才能使用插件
 window._AMapSecurityConfig = {
   securityJsCode: config.securityJsCode
