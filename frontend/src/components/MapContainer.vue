@@ -8,28 +8,6 @@
         <tr><input id="tipinput"/></tr>
       </table>
     </div>
-
-    <!--        <div id="findpath" class="text">-->
-    <!--            <table>-->
-    <!--                <tr>-->
-    <!--                    <td><label>起点：</label></td>-->
-    <!--                    <td><input id="begin" /></td>-->
-    <!--                    <td><label>终点：</label></td>-->
-    <!--                    <td><input id="end" /></td>-->
-    <!--                    <td><button @click="route('keyword')" class="but">导航</button></td>-->
-    <!--                </tr>-->
-    <!--                <tr>-->
-    <!--                    <td><label>起点坐标：</label></td>-->
-    <!--                    <td><input id="beginLngLat" /></td>-->
-    <!--                    <td><label>终点坐标：</label></td>-->
-    <!--                    <td><input id="endLngLat" /></td>-->
-    <!--                    <td><button @click="route('lnglat')" class="but">导航</button></td>-->
-    <!--                </tr>-->
-    <!--            </table>-->
-    <!--            <hr />-->
-    <!--        </div>-->
-
-
     <div id="markposition" class="text">
       <table>
         <tr>
@@ -192,8 +170,6 @@ export default {
               console.log('定位失败');
             }
           });
-
-          //this.map.addControl(new AMap.ToolBar());
           this.map.addControl(new AMap.Scale());
           this.map.addControl(new AMap.MapType());
         }
@@ -214,121 +190,8 @@ export default {
           offset: new AMap.Pixel(0, -120),
           isCustom: true,  //使用自定义窗体
         });
-
-        //初始化折线
-        {
-          //读取数据库表中的线，绘制出来
-          const Query = 'select * from polylines';
-          let that = this;
-          axios.default.request({
-            url: this.url,   //服务器端口号
-            responseType: 'json',
-            method: 'get',
-            params: {sql: Query},
-          })
-              .then(res => {
-                res = res.data;
-                //console.log(res);
-                for (let i = 0; i < res.length; i++) {
-                  let path = [];
-                  path.push([res[i].sta_lng, res[i].sta_lat]);
-                  path.push([res[i].end_lng, res[i].end_lat]);
-                  var polyline = new this.AMap.Polyline({
-                    path: path,
-                    isOutline: true,
-                    strokeColor: "#3366FF",
-                    strokeOpacity: 1,
-                    strokeWeight: 6,
-                    strokeStyle: "solid",
-                    strokeDasharray: [10, 5],
-                    showDir: true,
-                    extData: {id: res[i].id},
-                  });
-                  this.polyline.push(polyline);
-                  this.map.add(polyline);
-                  polyline.on('click', () => {
-                    this.selectedPolyline = polyline;
-                  });
-                  polyline.on("mouseover", function () {
-                    that.map.setDefaultCursor("pointer");
-                  });
-                  polyline.on("mouseout", function () {
-                    that.map.setDefaultCursor("default");
-                  });
-                }
-              }).catch(error => {
-            alert(error);
-            console.log(error);
-          });
-        }
-        //this.initializeMarkers();
-        //初始化标记点
-        {
-          axios.default.request({
-            url: this.url,   //服务器端口号
-            responseType: 'json',
-            method: 'get',
-            params: {sql: 'select * from points'},
-          })
-              .then(res => {
-                const message = res.data;   //必须这么写才能获取到真正的值
-                for (var i = 0; i < message.length; i++) {
-                  var lnglat = [Number(message[i].lng), Number(message[i].lat)];
-                  var marker = new AMap.Marker({
-                    position: lnglat,   //标记点位置
-                    offset: new AMap.Pixel(0, 0),  //设置标记点偏移量
-                    extData: {
-                      id: message[i].id,
-                      description: message[i].description,
-                      lng: message[i].lng,
-                      lat: message[i].lat,
-                      label: message[i].label,
-                      images: message[i].images,
-                    }
-                  });
-                  marker.content = message[i].description;
-                  marker.setLabel({
-                    offset: new this.AMap.Pixel(20, 20),  //设置文本标注偏移量
-                    content: message[i].label, //设置文本标注内容
-                    direction: 'bottom' //设置文本标注方位
-                  });
-                  this.markers.push(marker);
-                  marker.setMap(this.map);
-                  marker.on('click', (e) => {
-                    if (this.selectedMarker != null && this.selectedMarker._opts.label.content == e.target._opts.label.content && this.infoIsOpen == true) {
-                      this.infoWindow.close();
-                      this.infoIsOpen = false;
-                    } else {
-                      this.infoIsOpen = true;
-                      this.selectedMarker = e.target;
-                      if (e.target.image != null) this.windowInfo.imageUrl = e.target.images;
-                      if (e.target._opts.extData.description != null) this.windowInfo.text = e.target._opts.extData.description;
-                      if (e.target._opts.extData.images != null) {
-                        this.windowInfo.images = e.target._opts.extData.images;
-                        const binary = atob(this.windowInfo.images);
-                        const uint8Array = new Uint8Array(binary.length);
-                        for (let i = 0; i < binary.length; i++) {
-                          uint8Array[i] = binary.charCodeAt(i);
-                        }
-                        // 创建 Blob 对象以包含二进制数据
-                        const blob = new Blob([uint8Array]);
-                        // 如果需要，使用 URL.createObjectURL() 将 Blob 转换为 URL 字符串
-                        const url = URL.createObjectURL(blob);
-                        this.windowInfo.imageUrl = url;
-                        console.log(url);
-                      }else {
-                        this.windowInfo.imageUrl = "https://cdn.pixabay.com/photo/2013/05/07/08/46/paper-109277_1280.jpg";
-                      }
-                      this.infoWindow.setContent(this.$refs.windowInfo);
-                      this.infoWindow.open(this.map, e.target.getPosition());
-                    }
-                  });
-                }
-              }).catch(error => {
-            alert(error);
-            console.log(error);
-          });
-        }
+        this.initializePolylines();
+        this.initializeMarkers();
       }).catch(e => {
         console.log(e);
       })
@@ -375,6 +238,49 @@ export default {
         });
 
         this.markers = [...this.markers, ...markers];
+      }).catch(error => {
+        alert(error);
+        console.log(error);
+      });
+    },
+    initializePolylines() {
+      const query = 'select * from polylines';
+
+      axios.get(this.url, {
+        params: { sql: query }
+      }).then(({ data }) => {
+        const polylines = data.map(({ id, sta_lng, sta_lat, end_lng, end_lat }) => {
+          const path = [[sta_lng, sta_lat], [end_lng, end_lat]];
+          const polyline = new this.AMap.Polyline({
+            path,
+            isOutline: true,
+            strokeColor: "#3366FF",
+            strokeOpacity: 1,
+            strokeWeight: 6,
+            strokeStyle: "solid",
+            strokeDasharray: [10, 5],
+            showDir: true,
+            extData: { id }
+          });
+
+          this.map.add(polyline);
+
+          polyline.on('click', () => {
+            this.selectedPolyline = polyline;
+          });
+
+          polyline.on("mouseover", () => {
+            this.map.setDefaultCursor("pointer");
+          });
+
+          polyline.on("mouseout", () => {
+            this.map.setDefaultCursor("default");
+          });
+
+          return polyline;
+        });
+
+        this.polyline = [...this.polyline, ...polylines];
       }).catch(error => {
         alert(error);
         console.log(error);
@@ -504,44 +410,6 @@ export default {
       this.map.add(polyline);
       this.map.setFitView();
     },
-    route(method) {
-      //寻路功能
-      let that = this;
-      this.map.plugin('AMap.Driving', function () {
-        var driving = new that.AMap.Driving({
-          // 驾车路线规划策略，AMap.DrivingPolicy.LEAST_TIME是最快捷模式
-          policy: that.AMap.DrivingPolicy.LEAST_TIME,
-          map: that.map,
-          panel: 'panel'
-        })
-        that.autoBegin.on('select', that.select); // 注册监听，当选中某条记录时会触发
-        that.autoEnd.on('select', that.select); // 注册监听，当选中某条记录时会触发
-        if (method === 'keyword') {
-          var points = [
-            {keyword: that.begin},
-            {keyword: that.end}
-          ]
-          driving.search(points, function (status, result) {
-            if (status === 'complete') {
-              console.log('绘制驾车路线完成')
-              console.log(result.routes)
-            } else {
-              console.log('获取驾车数据失败：' + result)
-            }
-            // 未出错时，result即是对应的路线规划方案
-          })
-        } else if (method === 'lnglat') {
-          driving.search(that.startLngLat, that.endLngLat, function (status, result) {
-            if (status === 'complete') {
-              console.log('绘制驾车路线完成')
-              console.log(result.routes)
-            } else {
-              console.log('获取驾车数据失败：' + result)
-            }
-          })
-        }
-      })
-    },
     defineLine() {
       //自定义线
       let that = this;
@@ -608,7 +476,6 @@ export default {
         this.selectedPolyline = null;
       }
     },
-    //设置地图样式
     setStyle(mapStyle) {
       var styleName = "amap://styles/" + mapStyle;
       this.map.setMapStyle(styleName);
