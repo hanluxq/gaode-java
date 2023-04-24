@@ -1,24 +1,37 @@
 package com.example.gaodejava;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import oracle.sql.BLOB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootApplication
 @RestController
 @CrossOrigin(origins = "*") // 添加 CORS 中间件
 public class BackendServerApplication {
-
+    static Logger logger = LoggerFactory.getLogger(BackendServerApplication.class);
+    private JdbcTemplate jdbcTemplate;
+    // 构造函数
+    public BackendServerApplication(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
     public static void main(String[] args) {
         SpringApplication.run(BackendServerApplication.class, args);
     }
@@ -73,6 +86,33 @@ public class BackendServerApplication {
                 return "{\"error\": \"未知错误\", \"message\": \"" + e.getMessage() + "\"}";
             }
         }
+    }
+
+//    @PostMapping("/uploadImages")
+//    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file, @RequestParam("id") Long id) {
+//        try {
+//            byte[] imageData = file.getBytes();
+//            jdbcTemplate.update(
+//                    "UPDATE points SET images = ? WHERE id = ?",
+//                    new SqlLobValue(imageData), id
+//            );
+//            return ResponseEntity.ok().body("上传成功！");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.badRequest().body("上传失败：" + e.getMessage());
+//        }
+//    }
+    @PostMapping("/uploadImages")
+    public ResponseEntity<String> uploadImages(@RequestParam("file") MultipartFile file,@RequestParam("id") Long id) throws IOException, SQLException {
+        // 从 MultipartFile 中获取字节数组
+        byte[] bytes = file.getBytes();
+        logger.info("上传图片的大小为：" + bytes.length);
+        // 使用 Spring JDBC 将数据插入到 images 表中
+        String sql = "UPDATE points SET images = ? WHERE id = ?";
+        jdbcTemplate.update(sql, bytes, id);
+
+        // 返回成功的响应
+        return ResponseEntity.ok("Image uploaded successfully");
     }
 }
 
