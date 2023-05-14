@@ -1,5 +1,8 @@
 package com.example.gaodejava;
 
+import com.example.gaodejava.point;
+import com.example.gaodejava.line;
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -44,7 +47,19 @@ public class BackendServerApplication {
         return DriverManager.getConnection(url, user, password);
     }
 
-    // 处理 GET 请求
+    // 处理 GET Marker 请求
+    @GetMapping("/selectMarker")
+    public List<point> handleGetMarker() throws IOException {
+        point pointInstance = new point();
+        return pointInstance.selectAll();
+    }
+
+//    @GetMapping("/selectLine")
+//    public List<line> handleGetLine() throws IOException {
+//        line lineInstance = new line();
+//        return lineInstance.selectAll();
+//    }
+
     @GetMapping("/")
     public List<Map<String, Object>> handleGetRequest(@RequestParam("sql") String sql) {
         try {
@@ -88,20 +103,6 @@ public class BackendServerApplication {
         }
     }
 
-//    @PostMapping("/uploadImages")
-//    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file, @RequestParam("id") Long id) {
-//        try {
-//            byte[] imageData = file.getBytes();
-//            jdbcTemplate.update(
-//                    "UPDATE points SET images = ? WHERE id = ?",
-//                    new SqlLobValue(imageData), id
-//            );
-//            return ResponseEntity.ok().body("上传成功！");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.badRequest().body("上传失败：" + e.getMessage());
-//        }
-//    }
     @PostMapping("/uploadImages")
     public ResponseEntity<String> uploadImages(@RequestParam("file") MultipartFile file,@RequestParam("id") Long id) throws IOException, SQLException {
         // 从 MultipartFile 中获取字节数组
