@@ -13,20 +13,10 @@
                 <property name="password" value="hanlu1997"/>
             </dataSource>
         </environment>
-
-        <!--测试库-->
-        <environment id="test">
-            <transactionManager type="JDBC"/>
-            <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/gaode"/>
-                <property name="username" value="root"/>
-                <property name="password" value="hanlu1997"/>
-            </dataSource>
-        </environment>
     </environments>
     <mappers>
-<!--        <mapper resource="com/example/gaodejava/mapper/museumMapper.xml"/>-->
-        <package name="com.example.gaodejava.mapper"/>
+        <mapper resource="com/example/gaodejava/mapper/museumMapper.xml"/>
+        <mapper resource="com/example/gaodejava/mapper/lineMapper.xml"/>
+<!--        <package name="com.example.gaodejava.mapper"/>-->
     </mappers>
 </configuration>

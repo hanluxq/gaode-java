@@ -7,7 +7,4 @@ import java.util.List;
 
 public interface lineMapper {
     List<line> selectAll();
-
-    point selectByName(String name);
-
 }

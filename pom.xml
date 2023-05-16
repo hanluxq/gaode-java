@@ -14,7 +14,7 @@
     <name>gaode-java</name>
     <description>gaode-java</description>
     <properties>
-        <java.version>20</java.version>
+        <java.version>18</java.version>
     </properties>
     <dependencies>
         <dependency>

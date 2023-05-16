@@ -9,11 +9,53 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.List;
 
 public class line {
 
     private Integer id;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Double getSta_lng() {
+        return sta_lng;
+    }
+
+    public void setSta_lng(Double sta_lng) {
+        this.sta_lng = sta_lng;
+    }
+
+    public Double getSta_lat() {
+        return sta_lat;
+    }
+
+    public void setSta_lat(Double sta_lat) {
+        this.sta_lat = sta_lat;
+    }
+
+    public Double getEnd_lng() {
+        return end_lng;
+    }
+
+    public void setEnd_lng(Double end_lng) {
+        this.end_lng = end_lng;
+    }
+
+    public Double getEnd_lat() {
+        return end_lat;
+    }
+
+    public void setEnd_lat(Double end_lat) {
+        this.end_lat = end_lat;
+    }
+
     private Double sta_lng;
     private Double sta_lat;
     private Double end_lng;
@@ -38,6 +80,7 @@ public class line {
         //5. 返回标记数据
         return lines;
     }
+
 
     @Override
     public String toString() {

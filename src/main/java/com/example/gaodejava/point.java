@@ -209,7 +209,7 @@ public class point {
         return points;
     }
 
-    public static Object main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         //1.加载配置，获取factory
         String resource = "mybatis-config.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);
@@ -229,6 +229,5 @@ public class point {
         //4.释放资源
         sqlSession.close();
 
-        return points;
     }
 }

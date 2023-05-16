@@ -54,37 +54,12 @@ public class BackendServerApplication {
         return pointInstance.selectAll();
     }
 
-//    @GetMapping("/selectLine")
-//    public List<line> handleGetLine() throws IOException {
-//        line lineInstance = new line();
-//        return lineInstance.selectAll();
-//    }
-
-    @GetMapping("/")
-    public List<Map<String, Object>> handleGetRequest(@RequestParam("sql") String sql) {
-        try {
-            Connection conn = connectToDatabase();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            List<Map<String, Object>> rows = new ArrayList<>();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rsmd.getColumnCount();
-            while (rs.next()) {
-                // Represent a row in DB. Key: Column name, Value: Column value
-                Map<String, Object> row = new HashMap<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    // Note that the index is 1-based
-                    String colName = rsmd.getColumnName(i);
-                    Object colVal = rs.getObject(i);
-                    row.put(colName, colVal);
-                }
-                rows.add(row);
-            }
-            return rows;
-        } catch (SQLException e) {
-            return null;
-        }
+    @GetMapping("/selectLine")
+    public List<line> handleGetLine() throws IOException {
+        line lineInstance = new line();
+        return lineInstance.selectAll();
     }
+
 
     // 处理 POST 请求
     @PostMapping("/")

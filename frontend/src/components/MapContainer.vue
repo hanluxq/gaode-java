@@ -235,33 +235,33 @@ export default {
                 console.log(error);
             });
         },
-        // initializePolylines() {
-        //     axios.get(this.url+"/selectLine").then(({data}) => {
-        //         console.log(data);
-        //         const polylines = data.map(({id, sta_lng, sta_lat, end_lng, end_lat}) => {
-        //             const path = [[sta_lng, sta_lat], [end_lng, end_lat]];
-        //             const polyline = new this.AMap.Polyline({
-        //                 path,
-        //                 isOutline: true,
-        //                 strokeColor: "#3366FF",
-        //                 strokeOpacity: 1,
-        //                 strokeWeight: 6,
-        //                 strokeStyle: "solid",
-        //                 strokeDasharray: [10, 5],
-        //                 showDir: true,
-        //                 extData: {id}
-        //             });
-        //             this.map.add(polyline);
-        //             this.addPolylineEventListener(polyline);
-        //             return polyline;
-        //         });
-        //
-        //         this.polyline = [...this.polyline, ...polylines];
-        //     }).catch(error => {
-        //         alert(error);
-        //         console.log(error);
-        //     });
-        // },
+        initializePolylines() {
+            axios.get(this.url+"/selectLine").then(({data}) => {
+                console.log(data);
+                const polylines = data.map(({id, sta_lng, sta_lat, end_lng, end_lat}) => {
+                    const path = [[sta_lng, sta_lat], [end_lng, end_lat]];
+                    const polyline = new this.AMap.Polyline({
+                        path,
+                        isOutline: true,
+                        strokeColor: "#3366FF",
+                        strokeOpacity: 1,
+                        strokeWeight: 6,
+                        strokeStyle: "solid",
+                        strokeDasharray: [10, 5],
+                        showDir: true,
+                        extData: {id}
+                    });
+                    this.map.add(polyline);
+                    this.addPolylineEventListener(polyline);
+                    return polyline;
+                });
+
+                this.polyline = [...this.polyline, ...polylines];
+            }).catch(error => {
+                alert(error);
+                console.log(error);
+            });
+        },
         addMarkerListener(e) {
             if (this.flag === 'line') {   //连线状态
                 this.lines.path.push([e.target._opts.extData.lng_GCJ02, e.target._opts.extData.lat_GCJ02]);
@@ -315,36 +315,36 @@ export default {
                 }
             }
         },
-        initializePolylines() {
-            const query = 'select * from polylines';
-
-            axios.get(this.url, {
-                params: {sql: query}
-            }).then(({data}) => {
-                const polylines = data.map(({id, sta_lng, sta_lat, end_lng, end_lat}) => {
-                    const path = [[sta_lng, sta_lat], [end_lng, end_lat]];
-                    const polyline = new this.AMap.Polyline({
-                        path,
-                        isOutline: true,
-                        strokeColor: "#3366FF",
-                        strokeOpacity: 1,
-                        strokeWeight: 6,
-                        strokeStyle: "solid",
-                        strokeDasharray: [10, 5],
-                        showDir: true,
-                        extData: {id}
-                    });
-                    this.map.add(polyline);
-                    this.addPolylineEventListener(polyline);
-                    return polyline;
-                });
-
-                this.polyline = [...this.polyline, ...polylines];
-            }).catch(error => {
-                alert(error);
-                console.log(error);
-            });
-        },
+        // initializePolylines() {
+        //     const query = 'select * from polylines';
+        //
+        //     axios.get(this.url, {
+        //         params: {sql: query}
+        //     }).then(({data}) => {
+        //         const polylines = data.map(({id, sta_lng, sta_lat, end_lng, end_lat}) => {
+        //             const path = [[sta_lng, sta_lat], [end_lng, end_lat]];
+        //             const polyline = new this.AMap.Polyline({
+        //                 path,
+        //                 isOutline: true,
+        //                 strokeColor: "#3366FF",
+        //                 strokeOpacity: 1,
+        //                 strokeWeight: 6,
+        //                 strokeStyle: "solid",
+        //                 strokeDasharray: [10, 5],
+        //                 showDir: true,
+        //                 extData: {id}
+        //             });
+        //             this.map.add(polyline);
+        //             this.addPolylineEventListener(polyline);
+        //             return polyline;
+        //         });
+        //
+        //         this.polyline = [...this.polyline, ...polylines];
+        //     }).catch(error => {
+        //         alert(error);
+        //         console.log(error);
+        //     });
+        // },
         addPolylineEventListener(polyline){
             polyline.on('click', () => {
                 this.selectedPolyline = polyline;
