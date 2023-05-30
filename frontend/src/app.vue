@@ -5,12 +5,10 @@
 </template>
 
 <script>
-//import HelloWorld from './components/HelloWorld.vue'
 import MapContainer from './components/MapContainer.vue';
 export default {
-  name: 'App',
+  name: 'app',
   components: {
-    //HelloWorld,
     MapContainer
   }
 }

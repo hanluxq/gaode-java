@@ -16,6 +16,9 @@
     </environments>
     <mappers>
         <mapper resource="com/example/gaodejava/mapper/museumMapper.xml"/>
+        <mapper resource="com/example/gaodejava/mapper/fenjifenleiMapper.xml"/>
+        <mapper resource="com/example/gaodejava/mapper/guojiajiMapper.xml"/>
+        <mapper resource="com/example/gaodejava/mapper/shijiMapper.xml"/>
         <mapper resource="com/example/gaodejava/mapper/lineMapper.xml"/>
 <!--        <package name="com.example.gaodejava.mapper"/>-->
     </mappers>

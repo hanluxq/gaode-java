@@ -1,6 +1,10 @@
 package com.example.gaodejava;
 
 import com.example.gaodejava.mapper.museumMapper;
+import com.example.gaodejava.mapper.fenjifenleiMapper;
+import com.example.gaodejava.mapper.guojiajiMapper;
+import com.example.gaodejava.mapper.shijiMapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -8,6 +12,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.sql.Blob;
 import java.util.List;
 
@@ -186,10 +191,14 @@ public class point {
     private String clazz;
     private String address;
     private String date;
+    private String comment1;
+    private String comment2;
+    private String comment3;
+    private String comment4;
     private String description;
     private Blob images;
 
-    public List<point> selectAll() throws IOException {
+    public List<point> selectAll(String table) throws IOException {
         // 1. 创建 SqlSessionFactory 对象
         String resource = "mybatis-config.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);
@@ -197,10 +206,61 @@ public class point {
 
         // 2. 创建 SqlSession 对象
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        museumMapper mapper = sqlSession.getMapper(museumMapper.class);
+        Object mapper = null;
+        switch (table) {
+            case "museum": {
+                mapper = sqlSession.getMapper(museumMapper.class);
+                break;
+            }
+            case "fenjifenlei": {
+                mapper = sqlSession.getMapper(fenjifenleiMapper.class);
+                break;
+            }
+            case "guojiaji": {
+                mapper = sqlSession.getMapper(guojiajiMapper.class);
+                break;
+            }
+            case "shiji": {
+                mapper = sqlSession.getMapper(shijiMapper.class);
+                break;
+            }
+        }
+        //museumMapper mapper = sqlSession.getMapper(museumMapper.class);
+
+
 
         // 3. 获取标记数据
-        List<point> points = mapper.selectAll();
+        //List<point> points = mapper.selectAll();
+        List<point> points = null;
+        if (mapper != null) {
+            // 执行selectAll方法
+            try {
+                Method selectAllMethod = mapper.getClass().getMethod("selectAll");
+                points = (List<point>) selectAllMethod.invoke(mapper);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 4. 关闭 SqlSession 对象
+        sqlSession.close();
+
+        //5. 返回标记数据
+        return points;
+    }
+
+    public List<point> searchByKeyword(@Param("keyword") String[] cols) throws IOException {
+        // 1. 创建 SqlSessionFactory 对象
+        String resource = "mybatis-config.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+
+        // 2. 创建 SqlSession 对象
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        fenjifenleiMapper mapper = sqlSession.getMapper(fenjifenleiMapper.class);
+
+        // 3. 获取标记数据
+        List<point> points = mapper.searchByKeyword(cols);
 
         // 4. 关闭 SqlSession 对象
         sqlSession.close();

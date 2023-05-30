@@ -51,15 +51,15 @@ public class importData {
 
     public static void main(String[] args) {
         importData importData = new importData();
-        String table = "museum";
+        String table = "fenjifenlei";
         importData.importSheet0(table);
-        importData.importSheet1(table);
-        importData.importSheet2(table);
-        importData.importSheet3(table);
-        importData.importSheet4(table);
-        importData.importSheet5(table);
-        importData.importSheet6(table);
-        importData.importSheet7(table);
+//        importData.importSheet1(table);
+//        importData.importSheet2(table);
+//        importData.importSheet3(table);
+//        importData.importSheet4(table);
+//        importData.importSheet5(table);
+//        importData.importSheet6(table);
+//        importData.importSheet7(table);
 
     }
 
@@ -121,7 +121,7 @@ public class importData {
                         .append(comment).append("\n");
 
                 // 将数据保存到数组中
-                Object[] row_data = {name, date, epoch1, epoch2, lng_GCJ02, lat_GCJ02, BD09_lng, BD09_lat, lng_WGS84, lat_WGS84, levelChar, comment};
+                Object[] row_data = {name, date, epoch1, epoch2, lng_GCJ02, lat_GCJ02, BD09_lng, BD09_lat, lng_WGS84, lat_WGS84, levelChar, comment, comment1, comment2, comment3, comment4};
                 data.add(row_data);
             }
 
@@ -130,7 +130,7 @@ public class importData {
 
             // 将数据批量插入到数据库中
             try (Connection conn = connectToDatabase(); PreparedStatement pstmt = conn.prepareStatement(
-                    "INSERT IGNORE INTO "+ table +"(name, date, epoch1, epoch2, lng_GCJ02, lat_GCJ02, BD09_lng, BD09_lat, lng_WGS84, lat_WGS84, levelChar, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    "INSERT IGNORE INTO "+ table +"(name, date, epoch1, epoch2, lng_GCJ02, lat_GCJ02, BD09_lng, BD09_lat, lng_WGS84, lat_WGS84, levelChar, description,comment1, comment2, comment3, comment4) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)")) {
                 conn.setAutoCommit(false);
                 for (Object[] row_data : data) {
                     // 为每个参数设置值

@@ -91,6 +91,28 @@
             </div>
         </div>
 
+      <div class="checkbox-list">
+        <label >
+          <input id="checkbox1" type="checkbox" value="国家级爱国主义教育基地" >
+          北京市国家级爱国主义教育基地
+        </label>
+        <label >
+          <input id="checkbox2" type="checkbox" value="31处中国共产党早期北京革命活动旧址" >
+          中国共产党早期北京革命活动旧址
+        </label>
+        <label >
+          <input id="checkbox3" type="checkbox" value="102处北京市文旅局红色景点" >
+          北京市文旅局红色景点
+        </label>
+        <label >
+          <input id="checkbox4" type="checkbox" value="北京市级爱国主义教育基地" >
+          北京市级爱国主义教育基地
+        </label>
+        <label>
+          <button @click="this.requestPoints()">确定</button>
+        </label>
+      </div>
+
     </div>
 </template>
 <script>
@@ -108,6 +130,7 @@ export default {
     data() {
         return {
             that: this,
+            scope: 'fenjifenlei',
             map: null,  //地图对象
             autoOptions: {   //提示框参数
                 input: 'tipinput',
@@ -126,7 +149,7 @@ export default {
             markers: [],  //标记数组
             selectedMarker: null,  //选中的标记
             url: 'http://localhost:3000',
-            //url:'http://39.106.226.33:3000',
+            //url:'http://8.130.93.92:3000',
             mapStyle: 'normal',
             polyline: [],
             selectedPolyline: null,
@@ -146,6 +169,14 @@ export default {
                 epoch2: '无',
                 text: '暂无描述~',
             },
+          selectedOptions:[],
+          marker_image: {
+            marker_A: require('./marker_A.png'),
+            marker_B: require('./marker_B.png'),
+            marker_C: require('./marker_C.png'),
+            marker_D: require('./marker_D.png'),
+            marker_E: require('./marker_E.png'),
+          }
         }
     },
     methods: {
@@ -162,27 +193,27 @@ export default {
                     zoom: 11,           //设置地图显示的缩放级别
                 });
 
-                //添加定位控件
-                {
-                    this.geolocation = new AMap.Geolocation({
-                        enableHighAccuracy: true,//是否使用高精度定位，默认:true
-                        offset: [10, 20],       // 定位按钮的停靠位置的偏移量
-                        showButton: true,        //显示定位按钮，默认：true
-                        timeout: 10000,          //超过10秒后停止定位，默认：无穷大
-                        buttonPosition: 'RB',    //定位按钮的停靠位置
-                        zoomToAccuracy: false,   //定位成功后是否自动调整地图视野到定位点
-                    });
-                    this.map.addControl(this.geolocation);  //加上这句才能显示定位按钮
-                    this.geolocation.getCurrentPosition(function (status) {
-                        if (status == 'complete') {
-                            //onComplete(result)
-                        } else {
-                            console.log('定位失败');
-                        }
-                    });
-                    this.map.addControl(new AMap.Scale());
-                    this.map.addControl(new AMap.MapType());
-                }
+                // //添加定位控件
+                // {
+                //     this.geolocation = new AMap.Geolocation({
+                //         enableHighAccuracy: true,//是否使用高精度定位，默认:true
+                //         offset: [10, 20],       // 定位按钮的停靠位置的偏移量
+                //         showButton: true,        //显示定位按钮，默认：true
+                //         timeout: 10000,          //超过10秒后停止定位，默认：无穷大
+                //         buttonPosition: 'RB',    //定位按钮的停靠位置
+                //         zoomToAccuracy: false,   //定位成功后是否自动调整地图视野到定位点
+                //     });
+                //     this.map.addControl(this.geolocation);  //加上这句才能显示定位按钮
+                //     this.geolocation.getCurrentPosition(function (status) {
+                //         if (status == 'complete') {
+                //             //onComplete(result)
+                //         } else {
+                //             console.log('定位失败');
+                //         }
+                //     });
+                //     this.map.addControl(new AMap.Scale());
+                //     this.map.addControl(new AMap.MapType());
+                // }
 
                 //根据提示搜索地点
                 {
@@ -201,26 +232,57 @@ export default {
                     isCustom: true,  //使用自定义窗体
                 });
                 this.initializePolylines();
-                this.initializeMarkers();
+                //this.initializeMarkers();
             }).catch(e => {
                 console.log(e);
             })
         },
-        initializeMarkers() {
-            axios.get(this.url + "/selectMarker").then(({ data }) => {
+        initializeMarkers(cols) {
+          this.clearAllMarkers();
+              axios.get(this.url + "/selectMarker/selectByKeyword",{params:{cols:encodeURIComponent(cols)}}).then(({ data }) => {
                 // 遍历所有标记数据
                 const markers = data.map((markerData) => {
-                    //console.log(markerData);
+                  console.log(markerData);
+                  let color;
+                  let marker_image;
+                  switch(markerData.levelChar) {
+                    case "E":
+                      marker_image = this.marker_image.marker_E;
+                      break;
+                    case "D":
+                      marker_image = this.marker_image.marker_D;
+                      break;
+                    case "C":
+                      marker_image = this.marker_image.marker_C;
+                      break;
+                    case "B":
+                      marker_image = this.marker_image.marker_B;
+                      break;
+                    case "A":
+                      marker_image = this.marker_image.marker_A;
+                      break;
+                    default:
+                      color = "#FFC0CB"
+                  }
+                  const icon = new this.AMap.Icon({
+                    size: new this.AMap.Size(30, 43),
+                    image: marker_image,
+                    imageOffset: new this.AMap.Pixel(0, 0),
+                    imageSize: new this.AMap.Size(30, 43)
+                  });
                     // 将标记数据转换为 AMap.Marker 对象
                     const marker = new this.AMap.Marker({
                         position: [markerData.lng_GCJ02, markerData.lat_GCJ02],
                         offset: new this.AMap.Pixel(0, 0),
                         extData: { ...markerData },
+                        title: markerData.name,
+                        icon: icon,
                         label: {
                             offset: new this.AMap.Pixel(0, 0),
                             content: markerData.name,
                             direction: "bottom",
                         },
+                      zoom:13,
                     });
 
                     marker.setMap(this.map);
@@ -235,9 +297,15 @@ export default {
                 console.log(error);
             });
         },
+      // 定义方法清除所有标记
+      clearAllMarkers() {
+        const markers = this.map.getAllOverlays("marker");
+        markers.forEach((marker) => this.map.remove(marker));
+        this.markers = [];
+      },
         initializePolylines() {
             axios.get(this.url+"/selectLine").then(({data}) => {
-                console.log(data);
+                //console.log(data);
                 const polylines = data.map(({id, sta_lng, sta_lat, end_lng, end_lat}) => {
                     const path = [[sta_lng, sta_lat], [end_lng, end_lat]];
                     const polyline = new this.AMap.Polyline({
@@ -295,7 +363,7 @@ export default {
                     const blob = new Blob([bytes], {type: "image/jpeg"});
                     url = URL.createObjectURL(blob);
                 }
-                if (this.selectedMarker && this.selectedMarker._opts.label.content === e.target._opts.label.content && this.infoIsOpen) {
+                if (this.selectedMarker && this.selectedMarker._opts.title === e.target._opts.title && this.infoIsOpen) {
                     this.infoWindow.close();
                     this.infoIsOpen = false;
                 } else {
@@ -619,6 +687,24 @@ export default {
                 console.log(error);
             });
         },
+        getPoints(){
+          console.log(this.selectedOptions);
+          this.initializeMarkers();
+        },
+        requestPoints(){
+          const cols = [];
+          const checkbox1 = document.getElementById('checkbox1');
+          if(checkbox1.checked) cols.push("comment1");
+          const checkbox2 = document.getElementById('checkbox2');
+          if(checkbox2.checked) cols.push("comment2");
+          const checkbox3 = document.getElementById('checkbox3');
+          if(checkbox3.checked) cols.push("comment3");
+          const checkbox4 = document.getElementById('checkbox4');
+          if(checkbox4.checked) cols.push("comment4");
+          if(cols.length==0)
+            this.clearAllMarkers()
+          else this.initializeMarkers(cols);
+        }
     },
     mounted() {
         //DOM初始化完成进行地图初始化
@@ -803,4 +889,19 @@ export default {
     align-items: center;
     margin: 10px;
 }
+
+.checkbox-list {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 40%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+  max-width: 500px;
+  z-index: 999;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
 </style>

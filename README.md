@@ -50,3 +50,24 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ### 5.3 自定义两点之间的连线
 ## 6.显示点信息：文本框和图片
 ## 7.切换地图样式
+
+
+# 部署需要修改：
+```
+1.前端的请求地址,改成服务器ip
+2.打包后端mvn package，复制后端target下的jar包.运行后端java -jar ...
+3,复制前端fromted,运行前端npm run serve
+```
+
+## mysql迁移
+### 1.导出数据
+``` mysqldump gaode > gaode.sql```
+### 2.导入数据
+``` 
+mysql -u root -p 
+create database gaode;
+use gaode;
+source gaode.sql;
+```
+
+

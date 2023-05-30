@@ -4,11 +4,11 @@ import com.example.gaodejava.point;
 import com.example.gaodejava.line;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import oracle.sql.BLOB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +47,16 @@ public class BackendServerApplication {
         return DriverManager.getConnection(url, user, password);
     }
 
-    // 处理 GET Marker 请求
-    @GetMapping("/selectMarker")
-    public List<point> handleGetMarker() throws IOException {
+    @GetMapping("/selectMarker/selectAll")
+    public List<point> handleGetMarker(@RequestParam("table") String table) throws IOException {
         point pointInstance = new point();
-        return pointInstance.selectAll();
+        return pointInstance.selectAll(table);
+    }
+
+    @GetMapping("/selectMarker/selectByKeyword")
+    public List<point> handleGetMarker(@RequestParam("cols") String[] cols) throws IOException {
+        point pointInstance = new point();
+        return pointInstance.searchByKeyword(cols);
     }
 
     @GetMapping("/selectLine")
