@@ -120,6 +120,7 @@ import config from '../../api-key.json';
 import axios from 'axios';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import {ref} from 'vue';
+import defaultImage from '/src/components/default.jpg';
 //必须要使用密钥才能使用插件
 window._AMapSecurityConfig = {
     securityJsCode: config.securityJsCode
@@ -176,6 +177,7 @@ export default {
             marker_C: require('./marker_C.png'),
             marker_D: require('./marker_D.png'),
             marker_E: require('./marker_E.png'),
+            default: require('./default.jpg'),
           }
         }
     },
@@ -242,7 +244,7 @@ export default {
               axios.get(this.url + "/selectMarker/selectByKeyword",{params:{cols:encodeURIComponent(cols)}}).then(({ data }) => {
                 // 遍历所有标记数据
                 const markers = data.map((markerData) => {
-                  console.log(markerData);
+                  //console.log(markerData);
                   let color;
                   let marker_image;
                   switch(markerData.levelChar) {
@@ -352,7 +354,9 @@ export default {
                 const {target: {image, _opts: {extData}}} = e;
                 const img = e.target._opts.extData.images;
                 let url = null;
-                if (img == null) url = 'https://cdn.pixabay.com/photo/2013/05/07/08/46/paper-109277_1280.jpg';
+                console.log(img);
+                //if (img == null) url = 'https://cdn.pixabay.com/photo/2013/05/07/08/46/paper-109277_1280.jpg';
+                if (img == null) url = defaultImage;
                 else {
                     const binaryString = window.atob(img);
                     const len = binaryString.length;
@@ -369,7 +373,7 @@ export default {
                 } else {
                     this.infoIsOpen = true;
                     this.selectedMarker = e.target;
-                    this.windowInfo.imageUrl = url ?? 'https://cdn.pixabay.com/photo/2013/05/07/08/46/paper-109277_1280.jpg';
+                    this.windowInfo.imageUrl = url;
                     this.windowInfo.text = extData.description;
                     this.windowInfo.name = extData.name;
                     this.windowInfo.batch = extData.batch;
@@ -435,7 +439,7 @@ export default {
             let that = this;
             const len = this.markers.length;
             const id = this.markers[len - 1]._opts.extData.id + 1;
-            console.log(id);
+            //console.log(id);
             that.map.on("click", (e) => {
                 // 获取鼠标单击位置的经纬度
                 that.lnglat = e.lnglat;
@@ -573,7 +577,7 @@ export default {
                 //处理path，将path中存储的路径保存到数据库中
                 for (let i = 0; i < this.lines.path.length - 1; i++) {
                     const Query = 'insert into polylines(sta_lng,sta_lat,end_lng,end_lat) values(' + '' + this.lines.path[i][0] + ',' + this.lines.path[i][1] + ',' + this.lines.path[i + 1][0] + ',' + this.lines.path[i + 1][1] + ')';
-                    console.log(Query);
+                    //console.log(Query);
                     axios.default.request({
                         url: that.url,   //服务器端口号
                         responseType: 'json',
@@ -672,10 +676,10 @@ export default {
             input.setAttribute("readonly", "readonly");
             //获取输入框的值
             var text = input.value;
-            console.log(this.selectedMarker)
+            //console.log(this.selectedMarker)
             //保存到数据库中
             const Query = 'update points set description="' + text + '" where id=' + this.selectedMarker._opts.extData.id;
-            console.log(Query)
+            //console.log(Query)
             axios.default.request({
                 url: this.url,   //服务器端口号
                 method: 'post',
@@ -688,7 +692,7 @@ export default {
             });
         },
         getPoints(){
-          console.log(this.selectedOptions);
+          //console.log(this.selectedOptions);
           this.initializeMarkers();
         },
         requestPoints(){

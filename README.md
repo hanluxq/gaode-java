@@ -70,4 +70,9 @@ use gaode;
 source gaode.sql;
 ```
 
+## 服务器端
+```
+nohup npm run serve &
+nohup java -jar gaode-0.0.2-SNAPSHOT.jar &
+```
 
